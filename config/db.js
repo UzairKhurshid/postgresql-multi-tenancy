@@ -1,17 +1,24 @@
-// config/db.js
-const { Pool } = require("pg");
-require("dotenv").config();
+// db.js
+import pkg from 'pg';
+import dotenv from 'dotenv';
+dotenv.config();
 
-const pool = new Pool({
-  host: process.env.PGHOST,
-  user: process.env.PGUSER,
-  password: process.env.PGPASSWORD,
-  database: process.env.PGDATABASE,
-  port: process.env.PGPORT,
+const { Pool } = pkg;
+
+export const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
 });
 
-pool.connect()
-  .then(() => console.log("✅ Connected to PostgreSQL"))
-  .catch((err) => console.error("❌ Database connection error:", err.stack));
+export async function getTenantClient(tenant) {
+  const client = await pool.connect();
 
-module.exports = pool;
+  if (tenant.is_premium) {
+    // Switch to premium schema
+    await client.query(`SET search_path TO ${tenant.schema_name}, public;`);
+  } else {
+    // Shared tenant - use row-level isolation
+    await client.query(`SET app.current_tenant = '${tenant.id}';`);
+  }
+
+  return client;
+}

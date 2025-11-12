@@ -3,3 +3,8 @@ node_modules/
 .env
 /.env
 .env/
+postgresql-multi-tenancy-hybrid/node_modules
+postgresql-multi-tenancy-hybrid/node_modules/
+/postgresql-multi-tenancy-hybrid/node_modules
+/postgresql-multi-tenancy-hybrid/node_modules/
+postgresql-multi-tenancy-hybrid/.env
